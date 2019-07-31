@@ -1,0 +1,115 @@
+1. Create the /admins directory.
+
+sudo mkdir admins
+
+2. Create the groups emp and wheel (see man groupadd).
+
+sudo groupadd emp
+sudo groupadd wheel
+
+3. Create the normal (i.e., non-admin) user accounts larry, moe, and curly using adduser. You may set the passwords to anything you like.
+
+sudo adduser larry
+sudo adduser moe
+sudo adduser curly
+
+4. Add the non-admin accounts to the emp group by editing /etc/group or using usermod.
+
+sudo usermod -a -G emp larry
+sudo usermod -a -G emp moe
+sudo usermod -a -G emp curly
+
+5. Create the admin user accounts ken, dmr, and bwk -- specifying that the home directory for each admin should be located at /admins/username -- where username is ken, dmr or bwk. In other words, admin homedirs are not in /home. (See man adduser for special homedirectory options.) You may set the passwords to anything you like.
+
+sudo adduser --home /admins/ken ken
+sudo adduser --home /admins/dmr dmr
+sudo adduser --home /admins/bwk bwk
+
+6. Add the admin accounts to the wheel group by editing /etc/group or using usermod. (Ensure that admins are not part of the emp group.)
+
+sudo usermod -a -G wheel ken
+sudo usermod -a -G wheel dmr
+sudo usermod -a -G wheel bwk
+
+7. add larry, bwk, and dmr to ken's group.
+
+sudo usermod -a -G ken larry
+sudo usermod -a -G ken bwk
+sudo usermod -a -G ken dmr
+
+8. add moe, dmr, and ken to bwk's group.
+
+sudo usermod -a -G bwk moe
+sudo usermod -a -G bwk dmr
+sudo usermod -a -G bwk ken
+
+9. add curly, ken, and bwk to dmr's group.
+
+sudo usermod -a -G dmr curly
+sudo usermod -a -G dmr ken
+sudo usermod -a -G dmr bwk
+
+10. On this system, default permissions for new home directories allow other users (i.e., users that are not the owner or in the specified group) to read and execute files in the directory. This is too permissive for us. Set the mode on the home directories in /home so that owner can read, write, and execute, group can read and execute and other has no permissions. (Set the mode on the homedir only -- do not set it recursively.)
+
+sudo chmod 750 /home
+
+11. Individual home directories should now be inaccessible to other users. Now, set the permission mode on /home itself so that normal users can't list the contents of /home but can still access their home directories and so that members of the wheel group have full access to the directory (without using sudo).
+
+sudo chgrp wheel /home
+sudo chmod o-r /home
+sudo chmod o+wx /home
+
+12. By default, each homedir is owned by its user, and the homedir's group is set to the group named after the user. (For example, ken's homedir is set to ken:ken -- i.e., ken is the owner and the group is set to ken's group.) Set the permission modes recursively on the individual homedirectories in /admins (see man chmod) so that:
+	* owners have full access
+	*group users (users who are in the group associated with a user's home directory) can read and create files in that homedir
+	* other users can read and execute any files (unlike the home directories in /home)
+	* files created by a group member in that homedir should be set to the homedir owner's group. (Hint: Look up what the SUID and SGID bits do on directories.)
+	* Example: larry is in ken's group. larry can create files in ken's homedir, and those files are owned by larry, but are assigned to ken's group rather than larry's group. moe, not in ken's group, can only read and execute files. (Note that permissions for normal emp user homedirs are not changed.)
+
+
+	sudo chmod 765 -R /admins
+	sudo chmod g+s -R /admins
+
+The Ballot Box
+All regular employees use this directory to submit votes for "employee of the month".
+
+1. Create the /ballots directory.
+
+mkdir /ballots
+
+2. Set the permissions on /ballots so that it is owned by root and users can write files into the directory but cannot list the contents of the directory.
+
+sudo chmod 333 ballots // sudo chmod 003 ballots
+
+3. Furthermore, set it so that members of the wheel group have no access (not including sudo).
+
+sudo chgrp wheel /ballots
+sudo chmod g-rwx /ballots
+
+
+The TPS Reports Directory
+Admin employees submit TPS reports in this partially collaborative directory.
+
+1. Create the /tpsreports directory.
+
+sudo mkdir tpsreports
+
+2. Create the tps user.
+
+sudo adduser tps
+
+3. Set the permissions on /tpsreports so that it is owned by tps and that tps and members of the wheel group have full access to the directory, but so that no one else has access to the directory.
+
+sudo chown tps /tpsreports
+sudo chgrp wheel /tpsreports
+sudo chmod 770 /tpsreports
+
+4. Furthermore, configure it so that files written into it are still owned by the wheel group, but so that one member of wheel cannot delete another member's files.
+
+//sticky bit
+sudo chmod +t /tpsreports
+
+
+How to set recursively
+
+Firewall allowing all other traffic through. Not dropping (Test case 9)

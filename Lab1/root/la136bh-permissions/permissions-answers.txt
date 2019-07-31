@@ -1,0 +1,37 @@
+Sheldon Dong
+004784870
+la136bh
+
+Answer the questions from the lab manual in this file.
+
+1. Is there any way that employees can read the ballots of other users? If so, what could be done to stop this? If not, what prevents them from reading them?
+
+Employees would be able to read the ballots of other users if they know the name of the file they are trying to access. To prevent them from reading them, the file must be made unreadable or unexecutable by chmod.
+
+2. What does the 'x' bit mean when applied to directories?
+
+The 'x' bit specifies the execute bit, and when applied to directories, it means that the affected user can enter the directory and access files inside
+
+3. Which users on the system can delete arbitrary files in the /tpsreports directory?
+
+Because we set it so that only the owner (tps) and members of the wheel group have full access to the directory, only they can delete arbitrary files in the /tpsreports directory
+
+4. Is there any way that non-wheel employees can read files in the /tpsreports directory?
+
+We removed all permissions from other users. Other refers to anyone outside of tps and owners of the wheel group. Therefore, non-wheel employees cannot read files in the /tpsreports directory
+
+5. What do '0' permissions mean for the owner of a directory? What privileges do they have over files in that directory?
+
+The '0' permission for the owner of a directory means that they don't have read, write, or execute permissions on the directory.
+
+6. Is this safe? Why or why not? If it is not safe, is there a better way to give larry this access? If it is safe, how do you know it is safe? (Hint: search online for common sudo issues.)
+
+This is not safe for the system. Larry, or someone who spoofs as Larry, would be able to access the configuration from any host or IP. There is nothing to prevent the user from using vim to open, write to, or overwrite any files. However, there is no better way to give Larry access because he is not a priveleged user
+
+7. Assuming the init script /etc/init.d/httpd has no unknown vulnerabilities, is it safe to grant larry sudo access to the command /etc/init.d/httpd restart? If this is not secure, explain why.
+
+Graving Larry sudo access to the command should be safe. Unless his account is somehow compromised and it isn't actually Larry using it, Larry can really only execute that restart command.
+
+8. Is there some way that moe or curly could subvert this system to gain root privileges? If not, how do you know this is true?
+
+There is some way that moe and curly can subvert the system to gain root priveleges. There is a time period between the entering of a password and when the user is first able to interact with the shell. Because the shell is made from /etc/passwd, it can be modified to provide additional permissions. Also, because moe and curly are logged in with etc/profile, they would be able to modify the passwd file to gain sudo access 
